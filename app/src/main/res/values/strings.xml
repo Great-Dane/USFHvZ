@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">USF HvZ</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Home Strings -->
+    <string name="humans_count">HUMANS: </string>
+    <string name="zombies_count">ZOMBIES: </string>
+    <string name="player_name">Player Name</string>
+    <string name="team">Team</string>
+    <string-array name="app_menu">
+        <item>Navigate to...</item>
+        <item>Home</item>
+        <item>Rules Reference</item>
+        <item>Register Tag</item>
+        <item>Game Status</item>
+        <item>Dynamic Map</item>
+        <item>Moderator Controls</item>
+        <item>Log Out</item>
+    </string-array>
+
+    <!-- Heat Map Strings -->
+    <string name="title_activity_heat_map">Map</string>
+    <string name="title_activity_rules_reference">RulesReference</string>
+</resources>
