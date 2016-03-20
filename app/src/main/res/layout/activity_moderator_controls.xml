@@ -20,6 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/header_hint"
+        android:inputType="textCapWords"
         android:id="@+id/title_text"
         android:layout_below="@+id/title_header"
         android:layout_alignParentLeft="true"
@@ -39,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/body_hint"
-        android:inputType="textMultiLine"
+        android:inputType="textCapSentences|textMultiLine"
         android:ems="10"
         android:id="@+id/body_text"
         android:layout_below="@+id/body_header"
@@ -51,6 +52,7 @@
         android:layout_height="wrap_content"
         android:text="@string/post_announcement"
         android:id="@+id/announcement_button"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/body_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="39dp" />
 </RelativeLayout>
