@@ -59,6 +59,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sethi.gurdane.usfhvz.Home" />
         </activity>
+        <activity
+            android:name=".ModeratorControls"
+            android:label="@string/title_activity_moderator_controls" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sethi.gurdane.usfhvz.Home" />
+        </activity>
 
         <meta-data
             android:name="com.google.android.gms.version"

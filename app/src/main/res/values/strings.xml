@@ -24,4 +24,12 @@
     <string name="title_activity_heat_map">Map</string>
     <string name="title_activity_rules_reference">RulesReference</string>
     <string name="title_activity_register_tag">RegisterTag</string>
+    <string name="title_activity_moderator_controls">ModeratorControls</string>
+
+    <!-- Moderator Controls Strings -->
+    <string name="header_title">Title:</string>
+    <string name="body_title">Body:</string>
+    <string name="header_hint">Enter a title for your announcement...</string>
+    <string name="body_hint">What are you telling the players?</string>
+    <string name="post_announcement">POST ANNOUNCEMENT</string>
 </resources>

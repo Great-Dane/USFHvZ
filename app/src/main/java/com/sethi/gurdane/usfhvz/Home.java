@@ -141,6 +141,9 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
             case "Dynamic Map":
                 selection = HeatMap.class;
                 break;
+            case "Moderator Controls":
+                selection = ModeratorControls.class;
+                break;
             case "Log Out":
                 selection = Login.class;
                 break;
