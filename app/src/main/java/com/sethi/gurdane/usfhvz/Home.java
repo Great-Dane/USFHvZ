@@ -34,7 +34,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     private int humanCount;
     private int zombieCount;
 
-    public CognitoCachingCredentialsProvider credentialsProvider;
+    public static CognitoCachingCredentialsProvider credentialsProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
