@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -28,7 +27,12 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
 
     private TextView tvPlayerName;
     private TextView tvPlayerState;
+    private TextView tvHumanCount;
+    private TextView tvZombieCount;
     private Button bt;
+
+    private int humanCount;
+    private int zombieCount;
 
     public CognitoCachingCredentialsProvider credentialsProvider;
 
@@ -37,9 +41,11 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        //Initialize TextViews
+        //Initialize TextViews and button
         tvPlayerName  = (TextView)findViewById(R.id.player_name);
         tvPlayerState = (TextView)findViewById(R.id.team);
+        tvHumanCount = (TextView)findViewById(R.id.humans_count);
+        tvZombieCount = (TextView)findViewById(R.id.zombies_count);
         bt = (Button)findViewById(R.id.testButton);
 
         //initialize menu
@@ -55,36 +61,23 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                 Regions.US_EAST_1                                   //Amazon region
         );
 
-        //Initialize AWS DynamoDB client & Object Mapper
-
-
-        //Test mapper and save capabilities
-        USFHvZ_Users user = new USFHvZ_Users();
-        user.setKillId("newkillid123");
-        user.setName("Jessica Fielding");
-        user.setEmail("jrfielding@mail.usf.edu");
-        user.setState("Human");
-        user.setPassword("Testpassword");
-
-        //mapper.save(user);
-
-        //final USFHvZ_Users suser;
+        LoadPlayerCounts();
 
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View v) {
                 //perform action
-                DoYoreWork obj = new DoYoreWork();
+                LoadUser obj = new LoadUser();
                 obj.execute();
             }
         });
-
-
-        //tvPlayerName.setText(suser.getName());
-        //tvPlayerState.setText(suser.getState());
     }
 
-    public class DoYoreWork extends AsyncTask<String, Void, String> {
+    private void LoadPlayerCounts() {
+        //do nothing...yet. Muahaha.
+    }
+
+    public class LoadUser extends AsyncTask<String, Void, String> {
 
         String iname = "";
         String istate = "";
@@ -98,7 +91,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                 iname = suser.getName();
                 istate = suser.getState();
             } catch (Exception e) {
-                //nothing, IDC
+                //handle exception
             }
             return null;
         }
@@ -112,6 +105,26 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         }
     }
 
+    /*public class LoadPlayerCounts extends AsyncTask<String, Void, String> {
+        int humanPlayers = -1;
+        int zombiePlayers = -1;
+
+        @Override
+        protected String doInBackground(String...params) {
+            try {
+                AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
+                DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+            } catch (Exception e) {
+                //handle exception
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String page) {
+            //onPostExecute
+        }
+    }*/
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         Class selection = null;
@@ -121,6 +134,9 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                 break;
             case "Rules Reference":
                 selection = RulesReference.class;
+                break;
+            case "Register Tag":
+                selection = RegisterTag.class;
                 break;
             case "Dynamic Map":
                 selection = HeatMap.class;
