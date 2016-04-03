@@ -9,6 +9,7 @@
     <string name="zombies_count">ZOMBIES: </string>
     <string name="player_name">Player Name</string>
     <string name="team">Team</string>
+    <string name="action_refresh">Refresh</string>
     <string-array name="app_menu">
         <item>Navigate to...</item>
         <item>Home</item>

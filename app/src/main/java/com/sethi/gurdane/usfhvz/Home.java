@@ -153,26 +153,6 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         }
     }
 
-    /*public class LoadPlayerCounts extends AsyncTask<String, Void, String> {
-        int humanPlayers = -1;
-        int zombiePlayers = -1;
-
-        @Override
-        protected String doInBackground(String...params) {
-            try {
-                AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
-                DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
-            } catch (Exception e) {
-                //handle exception
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String page) {
-            //onPostExecute
-        }
-    }*/
-
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         Class selection = null;
@@ -222,8 +202,9 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_refresh) {
+            LoadPlayerCounts lpc = new LoadPlayerCounts();
+            lpc.execute();
         }
 
         return super.onOptionsItemSelected(item);
