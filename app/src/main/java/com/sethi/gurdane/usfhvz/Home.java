@@ -61,7 +61,8 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                 Regions.US_EAST_1                                   //Amazon region
         );
 
-        LoadPlayerCounts();
+        LoadPlayerCounts lpc = new LoadPlayerCounts();
+        lpc.execute();
 
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,8 +74,55 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         });
     }
 
-    private void LoadPlayerCounts() {
-        //do nothing...yet. Muahaha.
+    //Load counts of human and zombie players into home screen.
+    public class LoadPlayerCounts extends AsyncTask<String, Void, String> {
+        int zCount = 0;
+        int hCount = 0;
+        PaginatedQueryList<USFHvZ_Users> result;
+
+        @Override
+        protected String doInBackground(String...params) {
+            try {
+                //Set up DynamoDB client and mapper
+                AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
+                DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+                //Load zombie player count.
+                USFHvZ_Users zombies = new USFHvZ_Users();
+                zombies.setState("Zombie");
+
+                DynamoDBQueryExpression queryExpression1 = new DynamoDBQueryExpression()
+                        .withHashKeyValues(zombies)
+                        .withConsistentRead(false);
+
+                result = mapper.query(USFHvZ_Users.class, queryExpression1);
+                zCount = result.size();
+
+                //Load human player count.
+                USFHvZ_Users humans = new USFHvZ_Users();
+                humans.setState("Human");
+
+                DynamoDBQueryExpression queryExpression2 = new DynamoDBQueryExpression()
+                        .withHashKeyValues(humans)
+                        .withConsistentRead(false);
+
+                result = mapper.query(USFHvZ_Users.class, queryExpression2);
+                hCount = result.size();
+            } catch (Exception e) {
+                //handle exception
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String page) {
+            if (zCount == 0) {
+                tvZombieCount.setText("Something went wrong.");
+                tvHumanCount.setText("Something went wrong.");
+            } else {
+                tvZombieCount.setText("ZOMBIES: " + zCount);
+                tvHumanCount.setText("HUMANS: " + hCount);
+            }
+        }
     }
 
     public class LoadUser extends AsyncTask<String, Void, String> {

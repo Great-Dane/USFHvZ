@@ -43,6 +43,7 @@ public class USFHvZ_Users {
         this.email = email;
     }
 
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "game_status-index")
     @DynamoDBAttribute(attributeName = "game_status")
     public String getState() {
         return state;
