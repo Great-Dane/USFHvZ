@@ -34,6 +34,7 @@ public class USFHvZ_Users {
         this.name = name;
     }
 
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "email-index")
     @DynamoDBAttribute(attributeName = "email")
     public String getEmail() {
         return email;
