@@ -21,6 +21,10 @@
         <item>Log Out</item>
     </string-array>
 
+    <!-- announcement_item strings -->
+    <string name="announcement_item_title">Title</string>
+    <string name="announcement_item_body">Body body body</string>
+
     <!-- Heat Map Strings -->
     <string name="title_activity_heat_map">Map</string>
     <string name="title_activity_rules_reference">RulesReference</string>

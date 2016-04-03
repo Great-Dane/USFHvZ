@@ -10,8 +10,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 //Amazon Web Services imports
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
@@ -19,6 +21,10 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.*;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 import com.amazonaws.services.dynamodbv2.model.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 public class Home extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -31,8 +37,9 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     private TextView tvZombieCount;
     private Button bt;
 
-    private int humanCount;
-    private int zombieCount;
+    private ListView announcementsListView;
+    List<USFHvZ_Announcement> announcements;
+    private AnnouncementAdapter adapter;
 
     public static CognitoCachingCredentialsProvider credentialsProvider;
 
@@ -46,9 +53,8 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         tvPlayerState = (TextView)findViewById(R.id.team);
         tvHumanCount = (TextView)findViewById(R.id.humans_count);
         tvZombieCount = (TextView)findViewById(R.id.zombies_count);
-        bt = (Button)findViewById(R.id.testButton);
 
-        //initialize menu
+        //Initialize menu
         spinner = (Spinner) findViewById(R.id.spinner_home);
         ArrayAdapter<CharSequence> menuAdapter = ArrayAdapter.createFromResource(this, R.array.app_menu, android.R.layout.simple_spinner_item);
         spinner.setAdapter(menuAdapter);
@@ -61,17 +67,57 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                 Regions.US_EAST_1                                   //Amazon region
         );
 
+        announcementsListView = (ListView) findViewById(R.id.list_Home);
+        announcements = new ArrayList<>();
+        LoadAnnouncements la = new LoadAnnouncements();
+        la.execute();
+        if (announcements != null) {
+            adapter = new AnnouncementAdapter(Home.this, announcements);
+        }
+        else {
+            //Toast.makeText(Home.this, "announcements == null", Toast.LENGTH_SHORT).show();
+        }
+        announcementsListView.setAdapter(adapter);
+
         LoadPlayerCounts lpc = new LoadPlayerCounts();
         lpc.execute();
+    }
 
-        bt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick (View v) {
-                //perform action
-                LoadUser obj = new LoadUser();
-                obj.execute();
-            }
-        });
+    //Load moderator/game announcements
+    public class LoadAnnouncements extends AsyncTask<String, Void, String> {
+        PaginatedScanList<USFHvZ_Announcement> result;
+        int size;
+
+        @Override
+        protected String doInBackground(String...params) {
+            //try {
+                //Set up DynamoDB client and mapper
+                AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
+                DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+                DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+                result = mapper.scan(USFHvZ_Announcement.class, scanExpression);
+
+                size = result.size();
+
+                //announcements.addAll(result);
+
+                //Delete below if addAll works
+                for (int i=0; i<result.size(); i++) {
+                    USFHvZ_Announcement a = result.get(i);
+                    announcements.add(a);
+                }
+
+            //} catch (Exception e) {
+                //handle exception
+            //}
+            return null;
+        }
+
+        protected void onPostExecute(String page) {
+            //onPostExecute
+            Toast.makeText(getApplicationContext(), "result.size() = " + size, Toast.LENGTH_SHORT).show();
+        }
     }
 
     //Load counts of human and zombie players into home screen.
@@ -201,10 +247,13 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
+            //Refresh player counts
             LoadPlayerCounts lpc = new LoadPlayerCounts();
             lpc.execute();
+            //Refresh announcements
+            LoadAnnouncements la = new LoadAnnouncements();
+            la.execute();
         }
 
         return super.onOptionsItemSelected(item);

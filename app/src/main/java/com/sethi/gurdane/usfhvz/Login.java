@@ -73,7 +73,7 @@ public class Login extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String...params) {
-            //try {
+            try {
                 //Set up DynamoDB client and mapper
                 AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
                 DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
@@ -93,9 +93,9 @@ public class Login extends AppCompatActivity {
                 } else {
                     loginUser = null;
                 }
-            //} catch (Exception e) {
+            } catch (Exception e) {
                 //handle exception
-            //}
+            }
             return null;
         }
 
