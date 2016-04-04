@@ -47,6 +47,9 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.usfhvz_logo);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         //Initialize TextViews and button
         tvPlayerName  = (TextView)findViewById(R.id.player_name);
@@ -75,8 +78,8 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
             adapter = new AnnouncementAdapter(Home.this, announcements);
         }
         else {
-            //Toast.makeText(Home.this, "announcements == null", Toast.LENGTH_SHORT).show();
-        }
+            Toast.makeText(Home.this, "Error loading announcements.", Toast.LENGTH_SHORT).show();
+    }
         announcementsListView.setAdapter(adapter);
 
         LoadPlayerCounts lpc = new LoadPlayerCounts();
@@ -103,7 +106,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                 //announcements.addAll(result);
 
                 //Delete below if addAll works
-                for (int i=0; i<result.size(); i++) {
+                for (int i=result.size()-1; i>=0; i--) {
                     USFHvZ_Announcement a = result.get(i);
                     announcements.add(a);
                 }
@@ -116,7 +119,6 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
 
         protected void onPostExecute(String page) {
             //onPostExecute
-            Toast.makeText(getApplicationContext(), "result.size() = " + size, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -252,8 +254,9 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
             LoadPlayerCounts lpc = new LoadPlayerCounts();
             lpc.execute();
             //Refresh announcements
-            LoadAnnouncements la = new LoadAnnouncements();
-            la.execute();
+            /*LoadAnnouncements la = new LoadAnnouncements();
+            la.execute();*/
+            adapter.notifyDataSetChanged();
         }
 
         return super.onOptionsItemSelected(item);

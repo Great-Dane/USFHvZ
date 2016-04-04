@@ -3,8 +3,14 @@ package com.sethi.gurdane.usfhvz;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.media.Image;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -17,7 +23,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class HeatMap extends FragmentActivity implements
+public class HeatMap extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
@@ -27,6 +33,11 @@ public class HeatMap extends FragmentActivity implements
     private LocationRequest mLocationRequest;
 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+
+    //Declare button views
+    ImageButton btMyLocation;
+    ImageButton btAlert;
+    ImageButton btHelp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +56,11 @@ public class HeatMap extends FragmentActivity implements
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(10 * 1000)        // 10 seconds, in milliseconds
                 .setFastestInterval(1 * 1000); // 1 second, in milliseconds
+
+        //Initialize buttons
+        btMyLocation = (ImageButton)findViewById(R.id.bt_my_location);
+        btAlert = (ImageButton)findViewById(R.id.bt_enemy_sighted);
+        btHelp = (ImageButton)findViewById(R.id.bt_help);
     }
 
     @Override
@@ -139,5 +155,12 @@ public class HeatMap extends FragmentActivity implements
     @Override
     public void onLocationChanged(Location location) {
         handleNewLocation(location);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_dynamic_map, menu);
+        return true;
     }
 }

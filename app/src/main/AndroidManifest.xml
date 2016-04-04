@@ -26,6 +26,7 @@
         <activity
             android:name=".Login"
             android:label="@string/app_name"
+            android:icon="@drawable/usfhvz_logo"
             android:windowSoftInputMode="adjustResize|stateVisible" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +35,8 @@
         </activity>
         <activity
             android:name=".Home"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:icon="@drawable/usfhvz_logo">
         </activity>
         <activity
             android:name=".RulesReference"

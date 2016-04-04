@@ -26,7 +26,7 @@
     <string name="announcement_item_body">Body body body</string>
 
     <!-- Heat Map Strings -->
-    <string name="title_activity_heat_map">Map</string>
+    <string name="title_activity_heat_map">Dynamic Map</string>
     <string name="title_activity_rules_reference">RulesReference</string>
     <string name="title_activity_register_tag">RegisterTag</string>
     <string name="title_activity_moderator_controls">ModeratorControls</string>
