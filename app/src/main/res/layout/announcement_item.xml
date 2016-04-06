@@ -31,10 +31,23 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/announcement_item_post_date"
+            android:text="@string/announcement_item_post_date"
+            android:fontFamily="roboto-slab"
+            android:layout_below="@+id/announcement_item_title"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:paddingLeft="3dp"
+            android:textColor="#808080"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/announcement_item_body"
             android:id="@+id/announcement_item_body"
             android:fontFamily="roboto-slab"
-            android:layout_below="@+id/announcement_item_title"
+            android:layout_below="@+id/announcement_item_post_date"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:paddingLeft="3dp"

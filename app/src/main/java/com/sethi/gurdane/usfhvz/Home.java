@@ -24,8 +24,14 @@ import com.amazonaws.services.dynamodbv2.*;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 import com.amazonaws.services.dynamodbv2.model.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 
@@ -72,11 +78,30 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                 Regions.US_EAST_1                                   //Amazon region
         );
 
-        announcementsListView = (ListView) findViewById(R.id.list_Home);
+        announcementsListView = (ListView)findViewById(R.id.list_Home);
         announcements = new ArrayList<>();
         LoadAnnouncements la = new LoadAnnouncements();
         la.execute();
+
         if (announcements != null) {
+
+
+            /*Collections.sort(announcements, new Comparator<USFHvZ_Announcement>() {
+                public int compare(USFHvZ_Announcement a1, USFHvZ_Announcement a2) {
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    try {
+                        Date date1 = sdf.parse(a1.getDateTime());
+                        Date date2 = sdf.parse(a2.getDateTime());
+                        return date1.compareTo(date2);
+                    } catch (ParseException e) {
+                        //handle exception
+                    }
+
+                    return -10;
+                }
+            });*/
+
             adapter = new AnnouncementAdapter(Home.this, announcements);
         }
         else {
@@ -88,6 +113,17 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         lpc.execute();
     }
 
+    //Sort announcements list
+    public ArrayList<USFHvZ_Announcement> sortAnnouncements(ArrayList<USFHvZ_Announcement> announcements) {
+        ArrayList<USFHvZ_Announcement> sortedList = new ArrayList<USFHvZ_Announcement>();
+
+
+
+
+
+        return null;
+    }
+
     //Load moderator/game announcements
     public class LoadAnnouncements extends AsyncTask<String, Void, String> {
         PaginatedScanList<USFHvZ_Announcement> result;
@@ -95,7 +131,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
 
         @Override
         protected String doInBackground(String...params) {
-            //try {
+            try {
                 //Set up DynamoDB client and mapper
                 AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
                 DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
@@ -105,17 +141,37 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
 
                 size = result.size();
 
-                //announcements.addAll(result);
-
                 //Delete below if addAll works
                 for (int i=result.size()-1; i>=0; i--) {
                     USFHvZ_Announcement a = result.get(i);
                     announcements.add(a);
                 }
 
-            //} catch (Exception e) {
+                //Sort announcements by date
+                Collections.sort(announcements, new Comparator<USFHvZ_Announcement>() {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    @Override
+                    public int compare(USFHvZ_Announcement a1, USFHvZ_Announcement a2) {
+                        String s1 = a1.getDateTime();
+                        String s2 = a2.getDateTime();
+                        try {
+                            Date d1 = sdf.parse(s1);
+                            Date d2 = sdf.parse(s2);
+                            return d1.compareTo(d2);
+                        } catch (ParseException e) {
+                            //hande exception
+                            //throw new IllegalArgumentException(e);
+                        }
+                        return s1.compareTo(s2);
+                    }
+                });
+
+                //Sort by most recent
+                Collections.reverse(announcements);
+
+            } catch (Exception e) {
                 //handle exception
-            //}
+            }
             return null;
         }
 
@@ -171,34 +227,6 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
             } else {
                 tvZombieCount.setText("ZOMBIES: " + zCount);
                 tvHumanCount.setText("HUMANS: " + hCount);
-            }
-        }
-    }
-
-    public class LoadUser extends AsyncTask<String, Void, String> {
-
-        String iname = "";
-        String istate = "";
-
-        @Override
-        protected String doInBackground(String...params) {
-            try {
-                AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
-                DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
-                USFHvZ_Users suser = mapper.load(USFHvZ_Users.class, "IDGAF");
-                iname = suser.getName();
-                istate = suser.getState();
-            } catch (Exception e) {
-                //handle exception
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String page) {
-            //onPostExecute
-            if (!iname.equals("") && !istate.equals("")) {
-                tvPlayerName.setText(iname);
-                tvPlayerState.setText(istate);
             }
         }
     }

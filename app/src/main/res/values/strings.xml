@@ -27,6 +27,7 @@
 
     <!-- announcement_item strings -->
     <string name="announcement_item_title">Title</string>
+    <string name="announcement_item_post_date">Posted YYYY-MM-dd at HH:mm:ss</string>
     <string name="announcement_item_body">Body body body</string>
 
     <!-- Heat Map Strings -->
