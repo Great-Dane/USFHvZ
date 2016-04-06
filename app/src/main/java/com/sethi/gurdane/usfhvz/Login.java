@@ -1,6 +1,8 @@
 package com.sethi.gurdane.usfhvz;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +32,19 @@ public class Login extends AppCompatActivity {
     EditText etPassword;
     Button btSignIn;
 
+    //Shared Preferences variables
+    SharedPreferences pref; //Shared Preferences
+    SharedPreferences.Editor editor; //Editor for Shared Preferences
+    public static final int PRIVATE_MODE = 0; //Shared Preferences mode
+    public static final String PREF_NAME = "USFHvZPref"; //Shared Preferences file name
+
+    //Shared Preferences keys
+    private static final String IS_LOGIN = "IsLoggedIn";
+    public static final String KEY_NAME = "name";
+    public static final String KEY_STATE = "team";
+    public static final String KEY_EMAIL = "email";
+    public static final String KEY_PASSWORD = "password";
+
     private static CognitoCachingCredentialsProvider credentialsProvider;
 
     @Override
@@ -49,6 +64,14 @@ public class Login extends AppCompatActivity {
                 Regions.US_EAST_1                                   //Amazon region
         );
 
+        //Initialize Shared Prefernces
+        Context context = this.getApplicationContext();
+        pref = context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+        editor = pref.edit();
+
+        //Check login state
+        checkLogin();
+
         btSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View v) {
@@ -59,6 +82,21 @@ public class Login extends AppCompatActivity {
                 obj.execute();
             }
         });
+    }
+
+    private void checkLogin() {
+        if (pref.getBoolean(IS_LOGIN, false)) {
+            enterApp();
+        }
+    }
+
+    private void createLoginSession(String name, String team, String email, String password) {
+        editor.putBoolean(IS_LOGIN, true); //Store login value as true
+        editor.putString(KEY_NAME, name);
+        editor.putString(KEY_STATE, team);
+        editor.putString(KEY_EMAIL, email); // Storing email
+        editor.putString(KEY_PASSWORD, password); // Storing password
+        editor.commit(); //Commit changes
     }
 
     private void enterApp() {
@@ -102,6 +140,9 @@ public class Login extends AppCompatActivity {
         protected void onPostExecute(String page) {
             if (loginUser != null) {
                 if (loginUser.getPassword().equals(password)) {
+                    //Keep user logged in to the application until they log out
+                    createLoginSession(loginUser.getName(), loginUser.getState(),
+                            loginUser.getEmail(), loginUser.getPassword());
                     enterApp();
                 } else {
                     Toast.makeText(getApplicationContext(), "Invalid password.", Toast.LENGTH_SHORT).show();

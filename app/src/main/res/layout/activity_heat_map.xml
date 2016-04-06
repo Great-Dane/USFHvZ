@@ -13,18 +13,17 @@
         android:layout_gravity="center_horizontal|top" />
 
     <ImageButton
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:id="@+id/bt_my_location"
         android:layout_marginStart="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginRight="32dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/round_button"
+        android:background="@drawable/round_button2"
         android:src="@drawable/ic_action_location_found"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/bt_enemy_sighted"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter" />
 
@@ -32,25 +31,25 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:id="@+id/bt_enemy_sighted"
-        android:background="@drawable/round_button"
+        android:background="@drawable/round_button1"
         android:src="@drawable/ic_error_white_48dp"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        android:layout_alignTop="@+id/bt_my_location"
+        android:layout_alignBottom="@+id/bt_help"
         android:layout_centerHorizontal="true" />
 
     <ImageButton
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:id="@+id/bt_help"
+        android:layout_marginLeft="32dp"
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/round_button"
+        android:background="@drawable/round_button2"
         android:src="@drawable/ic_action_help"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/bt_enemy_sighted"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter" />
 

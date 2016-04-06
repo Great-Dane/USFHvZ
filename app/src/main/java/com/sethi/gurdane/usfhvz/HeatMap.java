@@ -4,14 +4,19 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.Image;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -22,6 +27,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class HeatMap extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
@@ -61,7 +69,137 @@ public class HeatMap extends AppCompatActivity implements
         btMyLocation = (ImageButton)findViewById(R.id.bt_my_location);
         btAlert = (ImageButton)findViewById(R.id.bt_enemy_sighted);
         btHelp = (ImageButton)findViewById(R.id.bt_help);
+
+        btAlert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View v) {
+                //perform action
+                UploadAlert obj = new UploadAlert();
+                obj.execute();
+            }
+        });
+
+        btHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //perform action
+                TestUploadLocation obj = new TestUploadLocation();
+                obj.execute();
+            }
+        });
     }
+
+    public class UploadAlert extends AsyncTask<String, Void, String> {
+
+        private String formattedDate = "";
+        private double currentLatitude;
+        private double currentLongitude;
+        private int h;
+        private int m;
+
+        @Override
+        protected void onPreExecute() {
+            //onPreExecute
+        }
+
+        @Override
+        protected String doInBackground(String...params) {
+            try {
+                AmazonDynamoDBClient client = new AmazonDynamoDBClient(Home.credentialsProvider);
+                DynamoDBMapper map = new DynamoDBMapper(client);
+
+                Calendar c = Calendar.getInstance();
+                SimpleDateFormat sdfTotal = new SimpleDateFormat("yyyyMMddHHmm");
+                SimpleDateFormat sdfHour = new SimpleDateFormat("HH");
+                SimpleDateFormat sdfMinute = new SimpleDateFormat("mm");
+                formattedDate = sdfTotal.format(c.getTime());
+                h = Integer.parseInt(sdfHour.format(c.getTime()));
+                m = Integer.parseInt(sdfMinute.format(c.getTime()));
+
+                //Get current latitude and longitude
+                Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                if (location == null) {
+                    h = 90001;
+                }
+                else {
+                    currentLatitude = location.getLatitude();
+                    currentLongitude = location.getLongitude();
+                    LatLng latLng = new LatLng(currentLatitude, currentLongitude);
+                    formattedDate = formattedDate + String.valueOf(currentLatitude) + String.valueOf(currentLongitude);
+
+                    //Create new location object and upload to database
+                    USFHvZ_Location alert = new USFHvZ_Location();
+                    alert.setTeam("Zombie");
+                    alert.setDateTime(formattedDate);
+                    alert.setLatitude(currentLatitude);
+                    alert.setLongitude(currentLongitude);
+                    alert.setHour(h);
+                    alert.setMinute(m);
+
+                    map.save(alert);
+                }
+
+            } catch (Exception e) {
+                //handle exception
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String page) {
+            //onPostExecute
+            Toast.makeText(getApplicationContext(), h + ":" + m, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public class TestUploadLocation extends AsyncTask<String, Void, String> {
+
+        USFHvZ_Location alert;
+        USFHvZ_Announcement ann;
+
+        @Override
+        protected void onPreExecute() {
+            //onPreExecute
+        }
+
+        @Override
+        protected String doInBackground(String...params) {
+            try {
+                AmazonDynamoDBClient client = new AmazonDynamoDBClient(Home.credentialsProvider);
+                DynamoDBMapper map = new DynamoDBMapper(client);
+
+                alert = new USFHvZ_Location();
+                alert.setTeam("Human");
+                alert.setDateTime("4/6/2016");
+                alert.setHour(10);
+                alert.setMinute(53);
+                alert.setLatitude(-10.6);
+                alert.setLongitude(5.3);
+
+                map.save(alert);
+
+                ann = new USFHvZ_Announcement();
+                ann.setDateTime("Test");
+                ann.setTitle("HeatMap Announcement");
+                ann.setBody("If you see this, we have a problem with USFHvZ_Announcement");
+                map.save(ann);
+            } catch (Exception e) {
+                //handle exception
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String page) {
+            if (alert == null && ann == null) {
+                Toast.makeText(getApplicationContext(), "Both null", Toast.LENGTH_SHORT).show();
+            } else if (alert == null) {
+                Toast.makeText(getApplicationContext(), "Alert is null", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "Ann is null", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
 
     @Override
     protected void onResume() {
@@ -114,7 +252,7 @@ public class HeatMap extends AppCompatActivity implements
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+        //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
     }
 
     @Override

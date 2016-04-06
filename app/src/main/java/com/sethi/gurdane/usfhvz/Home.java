@@ -1,6 +1,8 @@
 package com.sethi.gurdane.usfhvz;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -222,6 +224,12 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                 break;
             case "Log Out":
                 selection = Login.class;
+                //Delete login status data from Shared Preferences
+                Context context = this.getApplicationContext();
+                SharedPreferences pref = context.getSharedPreferences(Login.PREF_NAME, Login.PRIVATE_MODE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.clear();
+                editor.commit();
                 break;
             default:
                 return;

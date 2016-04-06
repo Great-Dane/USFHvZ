@@ -1,5 +1,6 @@
 package com.sethi.gurdane.usfhvz;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -80,6 +81,8 @@ public class ModeratorControls extends AppCompatActivity {
             //onPostExecute
             etTitle.setText("");
             etBody.setText("");
+            Intent intent = new Intent (getApplicationContext(), Home.class);
+            startActivity(intent);
         }
     }
 
