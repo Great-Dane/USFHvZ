@@ -3,7 +3,7 @@ package com.sethi.gurdane.usfhvz;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 
 /**
- * Created by Dane on 4/4/2016.
+ * Created by Dane on 4/6/2016.
  * Class maps items from Amazon AWS table
  * "USFHvZ_Location" to java objects
  */

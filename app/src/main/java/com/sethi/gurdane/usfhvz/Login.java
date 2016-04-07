@@ -33,8 +33,8 @@ public class Login extends AppCompatActivity {
     Button btSignIn;
 
     //Shared Preferences variables
-    SharedPreferences pref; //Shared Preferences
-    SharedPreferences.Editor editor; //Editor for Shared Preferences
+    public static SharedPreferences pref; //Shared Preferences
+    public static SharedPreferences.Editor editor; //Editor for Shared Preferences
     public static final int PRIVATE_MODE = 0; //Shared Preferences mode
     public static final String PREF_NAME = "USFHvZPref"; //Shared Preferences file name
 

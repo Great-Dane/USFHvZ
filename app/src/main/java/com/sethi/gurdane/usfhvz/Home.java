@@ -71,6 +71,10 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         spinner.setAdapter(menuAdapter);
         spinner.setOnItemSelectedListener(this);
 
+        //Display current player
+        tvPlayerName.setText(Login.pref.getString(Login.KEY_NAME, ""));
+        tvPlayerState.setText(Login.pref.getString(Login.KEY_STATE, ""));
+
         //Initialize AWS credentials
         credentialsProvider = new CognitoCachingCredentialsProvider(
                 getApplicationContext(),                            //application context
@@ -83,46 +87,10 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         LoadAnnouncements la = new LoadAnnouncements();
         la.execute();
 
-        if (announcements != null) {
-
-
-            /*Collections.sort(announcements, new Comparator<USFHvZ_Announcement>() {
-                public int compare(USFHvZ_Announcement a1, USFHvZ_Announcement a2) {
-
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    try {
-                        Date date1 = sdf.parse(a1.getDateTime());
-                        Date date2 = sdf.parse(a2.getDateTime());
-                        return date1.compareTo(date2);
-                    } catch (ParseException e) {
-                        //handle exception
-                    }
-
-                    return -10;
-                }
-            });*/
-
-            adapter = new AnnouncementAdapter(Home.this, announcements);
-        }
-        else {
-            Toast.makeText(Home.this, "Error loading announcements.", Toast.LENGTH_SHORT).show();
-    }
-        announcementsListView.setAdapter(adapter);
-
         LoadPlayerCounts lpc = new LoadPlayerCounts();
         lpc.execute();
     }
 
-    //Sort announcements list
-    public ArrayList<USFHvZ_Announcement> sortAnnouncements(ArrayList<USFHvZ_Announcement> announcements) {
-        ArrayList<USFHvZ_Announcement> sortedList = new ArrayList<USFHvZ_Announcement>();
-
-
-
-
-
-        return null;
-    }
 
     //Load moderator/game announcements
     public class LoadAnnouncements extends AsyncTask<String, Void, String> {
@@ -177,6 +145,13 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
 
         protected void onPostExecute(String page) {
             //onPostExecute
+            if (announcements != null) {
+                adapter = new AnnouncementAdapter(Home.this, announcements);
+            }
+            else {
+                Toast.makeText(Home.this, "Error loading announcements.", Toast.LENGTH_SHORT).show();
+            }
+            announcementsListView.setAdapter(adapter);
         }
     }
 
@@ -253,11 +228,8 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
             case "Log Out":
                 selection = Login.class;
                 //Delete login status data from Shared Preferences
-                Context context = this.getApplicationContext();
-                SharedPreferences pref = context.getSharedPreferences(Login.PREF_NAME, Login.PRIVATE_MODE);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.clear();
-                editor.commit();
+                Login.editor.clear();
+                Login.editor.commit();
                 break;
             default:
                 return;
@@ -290,9 +262,11 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
             LoadPlayerCounts lpc = new LoadPlayerCounts();
             lpc.execute();
             //Refresh announcements
-            /*LoadAnnouncements la = new LoadAnnouncements();
-            la.execute();*/
-            adapter.notifyDataSetChanged();
+            announcements.clear();
+            LoadAnnouncements la = new LoadAnnouncements();
+            la.execute();
+
+            //adapter.notifyDataSetChanged();
         }
 
         return super.onOptionsItemSelected(item);

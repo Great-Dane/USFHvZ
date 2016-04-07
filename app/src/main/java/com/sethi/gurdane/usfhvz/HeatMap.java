@@ -16,7 +16,12 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBQueryExpression;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -25,11 +30,16 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class HeatMap extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
@@ -46,6 +56,10 @@ public class HeatMap extends AppCompatActivity implements
     ImageButton btMyLocation;
     ImageButton btAlert;
     ImageButton btHelp;
+
+    //Declare variables
+    String playerTeam;
+    String opposingTeam;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +78,14 @@ public class HeatMap extends AppCompatActivity implements
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(10 * 1000)        // 10 seconds, in milliseconds
                 .setFastestInterval(1 * 1000); // 1 second, in milliseconds
+
+        //Initialize class variables
+        playerTeam = Login.pref.getString(Login.KEY_STATE, "");
+        if (playerTeam.equals("Human")) {
+            opposingTeam = "Zombie";
+        } else {
+            opposingTeam = "Human";
+        }
 
         //Initialize buttons
         btMyLocation = (ImageButton)findViewById(R.id.bt_my_location);
@@ -87,6 +109,152 @@ public class HeatMap extends AppCompatActivity implements
                 obj.execute();
             }
         });
+
+        //Place existing alerts on page
+        LoadLocations ll = new LoadLocations();
+        ll.execute();
+    }
+
+    public class LoadLocations extends AsyncTask<String, Void, String> {
+
+        int hour;
+        int min;
+        List<USFHvZ_Location> locations;
+        String toastString;
+
+        @Override
+        protected void onPreExecute() {
+            //onPreExecute
+        }
+
+        @Override
+        protected String doInBackground(String...params) {
+            //try {
+                AmazonDynamoDBClient client = new AmazonDynamoDBClient(Home.credentialsProvider);
+                DynamoDBMapper map = new DynamoDBMapper(client);
+
+                //Get current time and adjust to one hour ago
+                Calendar c = Calendar.getInstance(); //create calendar
+                c.setTime(new Date()); //set calendar to current date
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHH");
+
+                //Get current hour and minute
+                SimpleDateFormat sdfHour = new SimpleDateFormat("HH");
+                SimpleDateFormat sdfMinute = new SimpleDateFormat("mm");
+                min = Integer.parseInt(sdfMinute.format(c.getTime()));
+                hour = Integer.parseInt(sdfHour.format(c.getTime()));
+
+                String queryString2 = sdf.format(c.getTime()); //get current time
+                c.add(Calendar.HOUR_OF_DAY, -1); //subtract one hour
+                String queryString1 = sdf.format(c.getTime()); //get hour one past
+
+                USFHvZ_Location locationsToFind = new USFHvZ_Location();
+                locationsToFind.setTeam(opposingTeam);
+
+                //Perform two queries: One for the previous hour, one for the current hour.
+
+                Condition rangeKeyCondition1 = new Condition()
+                        .withComparisonOperator(ComparisonOperator.BEGINS_WITH.toString())
+                        .withAttributeValueList(new AttributeValue().withS(queryString1.toString()));
+                Condition rangeKeyCondition2 = new Condition()
+                        .withComparisonOperator(ComparisonOperator.BEGINS_WITH.toString())
+                        .withAttributeValueList(new AttributeValue().withS(queryString2.toString()));
+
+                DynamoDBQueryExpression queryExpression1 = new DynamoDBQueryExpression()
+                        .withHashKeyValues(locationsToFind)
+                        .withRangeKeyCondition("DateTime", rangeKeyCondition1)
+                        .withConsistentRead(false);
+                DynamoDBQueryExpression queryExpression2 = new DynamoDBQueryExpression()
+                        .withHashKeyValues(locationsToFind)
+                        .withRangeKeyCondition("DateTime", rangeKeyCondition2)
+                        .withConsistentRead(false);
+
+                PaginatedQueryList<USFHvZ_Location> result1 = map.query(USFHvZ_Location.class, queryExpression1);
+                PaginatedQueryList<USFHvZ_Location> result2 = map.query(USFHvZ_Location.class, queryExpression2);
+
+                //Add query results to locations list if they are within the last hour
+                locations = new ArrayList<USFHvZ_Location>();
+                //Delete below if addAll works
+                for (int i=0; i<result1.size(); i++) {
+                    USFHvZ_Location a = result1.get(i);
+                    if (a.getMinute() >= min) {
+                        locations.add(a);
+                    }
+                }
+                for (int i=0; i<result2.size(); i++) {
+                    USFHvZ_Location a = result2.get(i);
+                    locations.add(a);
+                }
+                toastString = "result1.size = " + result1.size()
+                        + "; result2.size() = " + result2.size()
+                        + "; locations.size() = " + locations.size();
+
+            //} catch (Exception e) {
+                //handle exception
+            //}
+            return null;
+        }
+
+        protected void onPostExecute(String page) {
+            //onPostExecute, draw a marker of the appropriate color for each location
+            Toast.makeText(getApplicationContext(), toastString, Toast.LENGTH_SHORT).show();
+            for (int i=0; i<locations.size(); i++) {
+                USFHvZ_Location location = locations.get(i);
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude()); //get latitude & longitude of marker
+
+                //Calculate difference between current time and time of location
+                String currentTime = hour + ":" + min;
+                String locationTime = location.getHour() + ":" + location.getMinute();
+                SimpleDateFormat sdfHM = new SimpleDateFormat("HH:mm");
+                long difference = -1;
+                try {
+                    Date c = sdfHM.parse(currentTime);
+                    Date l = sdfHM.parse(locationTime);
+                    difference = c.getTime() - l.getTime();
+                    difference = difference /(60*1000) % 60;
+                } catch (ParseException e) {
+                    //handle exception
+                }
+                if (difference != -1) {
+                    MarkerOptions options;
+                    if (difference < 5) {
+                        options = new MarkerOptions()
+                                .position(latLng)
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_1));
+                    } else if (difference < 10) {
+                        options = new MarkerOptions()
+                                .position(latLng)
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_2));
+                    } else if (difference < 15) {
+                        options = new MarkerOptions()
+                                .position(latLng)
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_3));
+                    } else if (difference <30) {
+                        options = new MarkerOptions()
+                                .position(latLng)
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_4));
+                    } else if (difference < 45) {
+                        options = new MarkerOptions()
+                                .position(latLng)
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_5));
+                    } else {
+                        options = new MarkerOptions()
+                                .position(latLng)
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_6));
+                    }
+                    mMap.addMarker(options);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Error loading dynamic map.", Toast.LENGTH_SHORT).show();
+                }
+
+
+                /*MarkerOptions options = new MarkerOptions()
+                        .position(latLng)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow)));*/
+                //
+
+            }
+        }
     }
 
     public class UploadAlert extends AsyncTask<String, Void, String> {
@@ -109,7 +277,7 @@ public class HeatMap extends AppCompatActivity implements
                 DynamoDBMapper map = new DynamoDBMapper(client);
 
                 Calendar c = Calendar.getInstance();
-                SimpleDateFormat sdfTotal = new SimpleDateFormat("yyyyMMddHHmm");
+                SimpleDateFormat sdfTotal = new SimpleDateFormat("yyyyMMddHHmmss");
                 SimpleDateFormat sdfHour = new SimpleDateFormat("HH");
                 SimpleDateFormat sdfMinute = new SimpleDateFormat("mm");
                 formattedDate = sdfTotal.format(c.getTime());
@@ -119,13 +287,15 @@ public class HeatMap extends AppCompatActivity implements
                 //Get current latitude and longitude
                 Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
                 if (location == null) {
-                    h = 90001;
+                    formattedDate = "Error uploading your alert.";
                 }
-                else {
+                else { //Upload current location
                     currentLatitude = location.getLatitude();
                     currentLongitude = location.getLongitude();
                     LatLng latLng = new LatLng(currentLatitude, currentLongitude);
-                    formattedDate = formattedDate + String.valueOf(currentLatitude) + String.valueOf(currentLongitude);
+                    formattedDate = formattedDate
+                            + " " + String.valueOf(currentLatitude)
+                            + " " + String.valueOf(currentLongitude);
 
                     //Create new location object and upload to database
                     USFHvZ_Location alert = new USFHvZ_Location();
@@ -147,7 +317,7 @@ public class HeatMap extends AppCompatActivity implements
 
         protected void onPostExecute(String page) {
             //onPostExecute
-            Toast.makeText(getApplicationContext(), h + ":" + m, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), formattedDate, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -271,10 +441,11 @@ public class HeatMap extends AppCompatActivity implements
         double currentLongitude = location.getLongitude();
         LatLng latLng = new LatLng(currentLatitude, currentLongitude);
 
-        MarkerOptions options = new MarkerOptions()
+        /*MarkerOptions options = new MarkerOptions()
                 .position(latLng)
-                .title("Your location");
-        mMap.addMarker(options);
+                .title("Your location")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        mMap.addMarker(options);*/
         mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 

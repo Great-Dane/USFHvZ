@@ -53,5 +53,4 @@
         android:adjustViewBounds="true"
         android:scaleType="fitCenter" />
 
-
 </RelativeLayout>
