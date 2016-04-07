@@ -265,8 +265,6 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
             announcements.clear();
             LoadAnnouncements la = new LoadAnnouncements();
             la.execute();
-
-            //adapter.notifyDataSetChanged();
         }
 
         return super.onOptionsItemSelected(item);

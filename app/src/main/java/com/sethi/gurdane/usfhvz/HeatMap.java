@@ -1,15 +1,18 @@
 package com.sethi.gurdane.usfhvz;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -61,6 +64,8 @@ public class HeatMap extends AppCompatActivity implements
     String playerTeam;
     String opposingTeam;
 
+    AlertDialog.Builder alertDialogBuilder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +91,8 @@ public class HeatMap extends AppCompatActivity implements
         } else {
             opposingTeam = "Human";
         }
+        alertDialogBuilder = new AlertDialog.Builder(this);
+
 
         //Initialize buttons
         btMyLocation = (ImageButton)findViewById(R.id.bt_my_location);
@@ -105,8 +112,7 @@ public class HeatMap extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 //perform action
-                TestUploadLocation obj = new TestUploadLocation();
-                obj.execute();
+                showHelpDialog();
             }
         });
 
@@ -123,13 +129,8 @@ public class HeatMap extends AppCompatActivity implements
         String toastString;
 
         @Override
-        protected void onPreExecute() {
-            //onPreExecute
-        }
-
-        @Override
         protected String doInBackground(String...params) {
-            //try {
+            try {
                 AmazonDynamoDBClient client = new AmazonDynamoDBClient(Home.credentialsProvider);
                 DynamoDBMapper map = new DynamoDBMapper(client);
 
@@ -146,7 +147,7 @@ public class HeatMap extends AppCompatActivity implements
 
                 String queryString2 = sdf.format(c.getTime()); //get current time
                 c.add(Calendar.HOUR_OF_DAY, -1); //subtract one hour
-                String queryString1 = sdf.format(c.getTime()); //get hour one past
+                String queryString1 = sdf.format(c.getTime()); //get one hour past
 
                 USFHvZ_Location locationsToFind = new USFHvZ_Location();
                 locationsToFind.setTeam(opposingTeam);
@@ -185,19 +186,18 @@ public class HeatMap extends AppCompatActivity implements
                     USFHvZ_Location a = result2.get(i);
                     locations.add(a);
                 }
-                toastString = "result1.size = " + result1.size()
-                        + "; result2.size() = " + result2.size()
-                        + "; locations.size() = " + locations.size();
-
-            //} catch (Exception e) {
-                //handle exception
-            //}
+            } catch (Exception e) {
+                toastString = "Error loading dynamic map.";
+            }
             return null;
         }
 
         protected void onPostExecute(String page) {
+            //Notify user of any errors
+            if (toastString != null) {
+                Toast.makeText(getApplicationContext(), toastString, Toast.LENGTH_SHORT).show();
+            }
             //onPostExecute, draw a marker of the appropriate color for each location
-            Toast.makeText(getApplicationContext(), toastString, Toast.LENGTH_SHORT).show();
             for (int i=0; i<locations.size(); i++) {
                 USFHvZ_Location location = locations.get(i);
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude()); //get latitude & longitude of marker
@@ -217,44 +217,82 @@ public class HeatMap extends AppCompatActivity implements
                 }
                 if (difference != -1) {
                     MarkerOptions options;
-                    if (difference < 5) {
-                        options = new MarkerOptions()
-                                .position(latLng)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_1));
-                    } else if (difference < 10) {
-                        options = new MarkerOptions()
-                                .position(latLng)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_2));
-                    } else if (difference < 15) {
-                        options = new MarkerOptions()
-                                .position(latLng)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_3));
-                    } else if (difference <30) {
-                        options = new MarkerOptions()
-                                .position(latLng)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_4));
-                    } else if (difference < 45) {
-                        options = new MarkerOptions()
-                                .position(latLng)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_5));
-                    } else {
-                        options = new MarkerOptions()
-                                .position(latLng)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_6));
+                    //Show zombie markers for human users
+                    if (opposingTeam.equals("Zombie")) {
+                        if (difference < 5) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_1));
+                        } else if (difference < 10) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_2));
+                        } else if (difference < 15) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_3));
+                        } else if (difference <30) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_4));
+                        } else if (difference < 45) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_5));
+                        } else {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_6));
+                        }
                     }
+                    else { //Show human markers for zombie users
+                        if (difference < 5) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.human_marker_1));
+                        } else if (difference < 10) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.human_marker_2));
+                        } else if (difference < 15) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.human_marker_3));
+                        } else if (difference <30) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.human_marker_4));
+                        } else if (difference < 45) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.human_marker_5));
+                        } else {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.human_marker_6));
+                        }
+                    }
+
                     mMap.addMarker(options);
                 } else {
-                    Toast.makeText(getApplicationContext(), "Error loading dynamic map.", Toast.LENGTH_SHORT).show();
+                    toastString = "Error loading dynamic map.";
+                    Toast.makeText(getApplicationContext(), toastString, Toast.LENGTH_SHORT).show();
                 }
-
-
-                /*MarkerOptions options = new MarkerOptions()
-                        .position(latLng)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow)));*/
-                //
-
             }
         }
+    }
+
+    //Shows dynamic map help dialog, called when help button is pressed.
+    private void showHelpDialog() {
+        alertDialogBuilder.setIcon(R.drawable.ic_action_help);
+        alertDialogBuilder.setMessage("Assistance is here!");
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+            }
+        });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     public class UploadAlert extends AsyncTask<String, Void, String> {
@@ -292,10 +330,6 @@ public class HeatMap extends AppCompatActivity implements
                 else { //Upload current location
                     currentLatitude = location.getLatitude();
                     currentLongitude = location.getLongitude();
-                    LatLng latLng = new LatLng(currentLatitude, currentLongitude);
-                    formattedDate = formattedDate
-                            + " " + String.valueOf(currentLatitude)
-                            + " " + String.valueOf(currentLongitude);
 
                     //Create new location object and upload to database
                     USFHvZ_Location alert = new USFHvZ_Location();
@@ -317,59 +351,8 @@ public class HeatMap extends AppCompatActivity implements
 
         protected void onPostExecute(String page) {
             //onPostExecute
-            Toast.makeText(getApplicationContext(), formattedDate, Toast.LENGTH_SHORT).show();
         }
     }
-
-    public class TestUploadLocation extends AsyncTask<String, Void, String> {
-
-        USFHvZ_Location alert;
-        USFHvZ_Announcement ann;
-
-        @Override
-        protected void onPreExecute() {
-            //onPreExecute
-        }
-
-        @Override
-        protected String doInBackground(String...params) {
-            try {
-                AmazonDynamoDBClient client = new AmazonDynamoDBClient(Home.credentialsProvider);
-                DynamoDBMapper map = new DynamoDBMapper(client);
-
-                alert = new USFHvZ_Location();
-                alert.setTeam("Human");
-                alert.setDateTime("4/6/2016");
-                alert.setHour(10);
-                alert.setMinute(53);
-                alert.setLatitude(-10.6);
-                alert.setLongitude(5.3);
-
-                map.save(alert);
-
-                ann = new USFHvZ_Announcement();
-                ann.setDateTime("Test");
-                ann.setTitle("HeatMap Announcement");
-                ann.setBody("If you see this, we have a problem with USFHvZ_Announcement");
-                map.save(ann);
-            } catch (Exception e) {
-                //handle exception
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String page) {
-            if (alert == null && ann == null) {
-                Toast.makeText(getApplicationContext(), "Both null", Toast.LENGTH_SHORT).show();
-            } else if (alert == null) {
-                Toast.makeText(getApplicationContext(), "Alert is null", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), "Ann is null", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-
 
     @Override
     protected void onResume() {
@@ -423,6 +406,7 @@ public class HeatMap extends AppCompatActivity implements
      */
     private void setUpMap() {
         //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+        mMap.setMyLocationEnabled(true);
     }
 
     @Override
@@ -441,11 +425,11 @@ public class HeatMap extends AppCompatActivity implements
         double currentLongitude = location.getLongitude();
         LatLng latLng = new LatLng(currentLatitude, currentLongitude);
 
-        /*MarkerOptions options = new MarkerOptions()
+        MarkerOptions options = new MarkerOptions()
                 .position(latLng)
                 .title("Your location")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-        mMap.addMarker(options);*/
+        mMap.addMarker(options);
         mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
@@ -471,5 +455,28 @@ public class HeatMap extends AppCompatActivity implements
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_dynamic_map, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        if (id == R.id.action_refresh) {
+            //Clear all current markers
+            mMap.clear();
+
+            //Refresh markers
+            LoadLocations obj = new LoadLocations();
+            obj.execute();
+
+            //Add user position marker
+
+
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
