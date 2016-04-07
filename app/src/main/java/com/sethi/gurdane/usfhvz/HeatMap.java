@@ -55,10 +55,7 @@ public class HeatMap extends AppCompatActivity implements
 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
-    //Declare button views
-    ImageButton btMyLocation;
     ImageButton btAlert;
-    ImageButton btHelp;
 
     //Declare variables
     String playerTeam;
@@ -94,10 +91,8 @@ public class HeatMap extends AppCompatActivity implements
         alertDialogBuilder = new AlertDialog.Builder(this);
 
 
-        //Initialize buttons
-        btMyLocation = (ImageButton)findViewById(R.id.bt_my_location);
+        //Initialize button
         btAlert = (ImageButton)findViewById(R.id.bt_enemy_sighted);
-        btHelp = (ImageButton)findViewById(R.id.bt_help);
 
         btAlert.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,14 +100,6 @@ public class HeatMap extends AppCompatActivity implements
                 //perform action
                 UploadAlert obj = new UploadAlert();
                 obj.execute();
-            }
-        });
-
-        btHelp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //perform action
-                showHelpDialog();
             }
         });
 
@@ -302,6 +289,8 @@ public class HeatMap extends AppCompatActivity implements
         private double currentLongitude;
         private int h;
         private int m;
+        private LatLng newLatLng;
+        private String errorString;
 
         @Override
         protected void onPreExecute() {
@@ -325,7 +314,7 @@ public class HeatMap extends AppCompatActivity implements
                 //Get current latitude and longitude
                 Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
                 if (location == null) {
-                    formattedDate = "Error uploading your alert.";
+                    errorString = "Error uploading your alert.";
                 }
                 else { //Upload current location
                     currentLatitude = location.getLatitude();
@@ -341,6 +330,8 @@ public class HeatMap extends AppCompatActivity implements
                     alert.setMinute(m);
 
                     map.save(alert);
+
+                    newLatLng = new LatLng(currentLatitude, currentLongitude);
                 }
 
             } catch (Exception e) {
@@ -351,6 +342,21 @@ public class HeatMap extends AppCompatActivity implements
 
         protected void onPostExecute(String page) {
             //onPostExecute
+            if (errorString != null) {
+                Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+            } else { //Add new location to map
+                MarkerOptions options;
+                if (opposingTeam.equals("Zombie")) {
+                    options = new MarkerOptions()
+                            .position(newLatLng)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_1));
+                } else {
+                    options = new MarkerOptions()
+                            .position(newLatLng)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.human_marker_1));
+                }
+                mMap.addMarker(options);
+            }
         }
     }
 
@@ -471,10 +477,10 @@ public class HeatMap extends AppCompatActivity implements
             //Refresh markers
             LoadLocations obj = new LoadLocations();
             obj.execute();
-
-            //Add user position marker
-
-
+        }
+        if (id == R.id.action_help) {
+            //Display help dialog
+            showHelpDialog();
         }
 
         return super.onOptionsItemSelected(item);

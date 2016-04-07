@@ -31,9 +31,19 @@
 
     <!-- Heat Map Strings -->
     <string name="title_activity_heat_map">Dynamic Map</string>
-    <string name="title_activity_rules_reference">RulesReference</string>
-    <string name="title_activity_register_tag">RegisterTag</string>
-    <string name="title_activity_moderator_controls">ModeratorControls</string>
+
+    <!-- Rules Reference Strings -->
+    <string name="title_activity_rules_reference">Rules Reference</string>
+    <string-array name="rules_reference_spinner_values">
+        <item>Game Rules</item>
+        <item>Perks</item>
+        <item>Game Map and Times</item>
+        <item>Achievements</item>
+    </string-array>
+
+    <string name="title_activity_register_tag">Register Tag</string>
+    <string name="title_activity_moderator_controls">Moderator Controls</string>
+    <string name="action_help">Help</string>
 
     <!-- Moderator Controls Strings -->
     <string name="header_title">Title:</string>
