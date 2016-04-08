@@ -34,7 +34,6 @@ public class Login extends AppCompatActivity {
     EditText etEmail;
     EditText etPassword;
     Button btSignIn;
-    ImageView logo;
 
     //Shared Preferences variables
     public static SharedPreferences pref; //Shared Preferences
@@ -62,8 +61,6 @@ public class Login extends AppCompatActivity {
         etEmail = (EditText)findViewById(R.id.email);
         etPassword = (EditText)findViewById(R.id.password);
         btSignIn = (Button)findViewById(R.id.email_sign_in_button);
-        logo = (ImageView) findViewById(R.id.iv_logo);
-        logo.setImageResource(R.drawable.usfhvz_logo);
 
         //Initialize AWS credentials
         credentialsProvider = new CognitoCachingCredentialsProvider(

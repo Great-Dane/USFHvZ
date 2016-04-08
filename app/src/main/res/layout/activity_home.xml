@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/spinner_home"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -19,24 +20,44 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/player_name"
         android:id="@+id/player_name"
-        android:layout_below="@id/spinner_home"
-        android:layout_centerHorizontal="true" />
+        android:singleLine="true"
+        android:layout_alignTop="@+id/spinner_home"
+        android:layout_alignLeft="@+id/zombies_count"
+        android:layout_alignStart="@+id/zombies_count" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/team"
         android:id="@+id/team"
+        android:singleLine="true"
         android:layout_below="@+id/player_name"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignLeft="@+id/player_name"
+        android:layout_alignStart="@+id/player_name" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:layout_marginBottom="2dp"
+        android:id="@+id/view_line_1"
+        android:layout_below="@+id/team"
+        android:background="#990000" />
 
     <ListView
         android:id="@+id/list_Home"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/team"
-        android:layout_above="@+id/humans_count">
+        android:layout_above="@+id/view_line_2"
+        android:layout_below="@+id/view_line_1">
     </ListView>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="2dp"
+        android:id="@+id/view_line_2"
+        android:layout_above="@+id/humans_count"
+        android:background="#990000" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -44,7 +65,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/humans_count"
         android:id="@+id/humans_count"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/graph_population"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -54,7 +75,25 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/zombies_count"
         android:id="@+id/zombies_count"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/graph_population"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/graph_population"
+        android:layout_alignParentBottom="true">
+        <ImageView
+            android:id="@+id/human_scale"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/human_scale" />
+        <ImageView
+            android:id="@+id/zombie_scale"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/zombie_scale" />
+    </LinearLayout>
 </RelativeLayout>

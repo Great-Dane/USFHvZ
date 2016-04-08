@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -43,7 +45,8 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     private TextView tvPlayerState;
     private TextView tvHumanCount;
     private TextView tvZombieCount;
-    private Button bt;
+    private ImageView ivHumanScale;
+    private ImageView ivZombieScale;
 
     private ListView announcementsListView;
     List<USFHvZ_Announcement> announcements;
@@ -59,24 +62,35 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         getSupportActionBar().setLogo(R.drawable.usfhvz_logo);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
-        //Initialize TextViews and button
+        //Initialize views
         tvPlayerName  = (TextView)findViewById(R.id.player_name);
         tvPlayerState = (TextView)findViewById(R.id.team);
         tvHumanCount = (TextView)findViewById(R.id.humans_count);
         tvZombieCount = (TextView)findViewById(R.id.zombies_count);
+        ivHumanScale = (ImageView)findViewById(R.id.human_scale);
+        ivZombieScale = (ImageView)findViewById(R.id.zombie_scale);
 
         //Initialize menu
         spinner = (Spinner) findViewById(R.id.spinner_home);
-        ArrayAdapter<CharSequence> menuAdapter = ArrayAdapter.createFromResource(this, R.array.app_menu, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> menuAdapter;
+        //Alter spinner items depending on user
+        if (Login.pref.getString(Login.KEY_STATE, "").equals("Human")) { //Human menu
+            menuAdapter = ArrayAdapter.createFromResource(this, R.array.app_menu_human, R.layout.spinner_item);
+        } else if (Login.pref.getString(Login.KEY_STATE, "").equals("")) { //Moderator menu
+            menuAdapter = ArrayAdapter.createFromResource(this, R.array.app_menu_moderator, R.layout.spinner_item);
+        } else { //Zombie or OZ menu
+            menuAdapter = ArrayAdapter.createFromResource(this, R.array.app_menu_zombie, R.layout.spinner_item);
+        }
+        menuAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(menuAdapter);
         spinner.setOnItemSelectedListener(this);
 
-        //Update user state
-
-
-        //Display current player
-        tvPlayerName.setText(Login.pref.getString(Login.KEY_NAME, ""));
-        tvPlayerState.setText(Login.pref.getString(Login.KEY_STATE, ""));
+        //Update player information if not moderators
+        if (!Login.pref.getString(Login.KEY_NAME, "").equals("")) {
+            String[] names = Login.pref.getString(Login.KEY_NAME, "").split(" ");
+            tvPlayerName.setText(names[0]);
+            tvPlayerState.setText(Login.pref.getString(Login.KEY_STATE, ""));
+        }
 
         //Initialize AWS credentials
         credentialsProvider = new CognitoCachingCredentialsProvider(
@@ -204,6 +218,18 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
             } else {
                 tvZombieCount.setText("ZOMBIES: " + zCount);
                 tvHumanCount.setText("HUMANS: " + hCount);
+                //Update graph
+                int total = zCount+hCount;
+                if(total != 0) {//do not divide by zero
+                    float hf = (float)hCount/total;
+                    float zf = (float)zCount/total;
+                    ivHumanScale.setLayoutParams(new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT, hf));
+                    ivZombieScale.setLayoutParams(new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT, zf));
+                }
             }
         }
     }

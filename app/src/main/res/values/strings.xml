@@ -10,11 +10,25 @@
     <string name="player_name">Moderator</string>
     <string name="team">USF HvZ Mods</string>
     <string name="action_refresh">Refresh</string>
-    <string-array name="app_menu">
+    <string-array name="app_menu_human">
+        <item>Navigate to...</item>
+        <item>Home</item>
+        <item>Rules Reference</item>
+        <item>Dynamic Map</item>
+        <item>Log Out</item>
+    </string-array>
+    <string-array name="app_menu_zombie">
         <item>Navigate to...</item>
         <item>Home</item>
         <item>Rules Reference</item>
         <item>Register Tag</item>
+        <item>Dynamic Map</item>
+        <item>Log Out</item>
+    </string-array>
+    <string-array name="app_menu_moderator">
+        <item>Navigate to...</item>
+        <item>Home</item>
+        <item>Rules Reference</item>
         <item>Dynamic Map</item>
         <item>Moderator Controls</item>
         <item>Log Out</item>
