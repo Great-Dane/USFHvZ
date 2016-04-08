@@ -204,35 +204,8 @@ public class HeatMap extends AppCompatActivity implements
                 }
                 if (difference != -1) {
                     MarkerOptions options;
-                    //Show zombie markers for human users
-                    if (opposingTeam.equals("Zombie")) {
-                        if (difference < 5) {
-                            options = new MarkerOptions()
-                                    .position(latLng)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_1));
-                        } else if (difference < 10) {
-                            options = new MarkerOptions()
-                                    .position(latLng)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_2));
-                        } else if (difference < 15) {
-                            options = new MarkerOptions()
-                                    .position(latLng)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_3));
-                        } else if (difference <30) {
-                            options = new MarkerOptions()
-                                    .position(latLng)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_4));
-                        } else if (difference < 45) {
-                            options = new MarkerOptions()
-                                    .position(latLng)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_5));
-                        } else {
-                            options = new MarkerOptions()
-                                    .position(latLng)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_6));
-                        }
-                    }
-                    else { //Show human markers for zombie users
+                    //Show human markers for zombie users
+                    if (opposingTeam.equals("Human")) {
                         if (difference < 5) {
                             options = new MarkerOptions()
                                     .position(latLng)
@@ -259,7 +232,33 @@ public class HeatMap extends AppCompatActivity implements
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.human_marker_6));
                         }
                     }
-
+                    else { //Show zombie markers for human users
+                        if (difference < 5) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_1));
+                        } else if (difference < 10) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_2));
+                        } else if (difference < 15) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_3));
+                        } else if (difference <30) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_4));
+                        } else if (difference < 45) {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_5));
+                        } else {
+                            options = new MarkerOptions()
+                                    .position(latLng)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_6));
+                        }
+                    }
                     mMap.addMarker(options);
                 } else {
                     toastString = "Error loading dynamic map.";
@@ -346,14 +345,14 @@ public class HeatMap extends AppCompatActivity implements
                 Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
             } else { //Add new location to map
                 MarkerOptions options;
-                if (opposingTeam.equals("Zombie")) {
-                    options = new MarkerOptions()
-                            .position(newLatLng)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_1));
-                } else {
+                if (opposingTeam.equals("Human")) {
                     options = new MarkerOptions()
                             .position(newLatLng)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.human_marker_1));
+                } else {
+                    options = new MarkerOptions()
+                            .position(newLatLng)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.zombie_marker_1));
                 }
                 mMap.addMarker(options);
             }
