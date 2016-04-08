@@ -9,12 +9,26 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/title_post_announcement"
+        android:id="@+id/tv_post_announcement"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold"
+        android:textColor="#990000"
+        android:fontFamily="roboto-slab" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/header_title"
         android:id="@+id/title_header"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/tv_post_announcement"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="#990000"
+        android:fontFamily="roboto-slab" />
 
     <EditText
         android:layout_width="match_parent"
@@ -24,7 +38,8 @@
         android:id="@+id/title_text"
         android:layout_below="@+id/title_header"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:fontFamily="roboto-slab" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -34,7 +49,9 @@
         android:layout_below="@+id/title_text"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="#990000"
+        android:fontFamily="roboto-slab" />
 
     <EditText
         android:layout_width="match_parent"
@@ -45,14 +62,78 @@
         android:id="@+id/body_text"
         android:layout_below="@+id/body_header"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:fontFamily="roboto-slab" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:text="@string/post_announcement"
         android:id="@+id/announcement_button"
         android:layout_below="@+id/body_text"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="39dp" />
+        android:textStyle="bold"
+        android:background="#000000"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/title_update_player"
+        android:id="@+id/tv_update_state"
+        android:layout_below="@+id/announcement_button"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold"
+        android:textColor="#990000"
+        android:fontFamily="roboto-slab" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/killid_hint"
+        android:ellipsize="start"
+        android:gravity="center_horizontal"
+        android:inputType="text"
+        android:id="@+id/kill_id_text"
+        android:layout_below="@+id/tv_update_state"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:fontFamily="roboto-slab" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/kill_id_text">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginRight="10dp"
+            android:text="@string/kill_human"
+            android:id="@+id/bt_kill_human"
+            android:textStyle="bold"
+            android:background="#000000"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/cure_zombie"
+            android:id="@+id/bt_cure_zombie"
+            android:textStyle="bold"
+            android:background="#000000"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+
+
 </RelativeLayout>

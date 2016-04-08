@@ -53,9 +53,9 @@
         android:text="Sign in to USF HvZ"
         android:textStyle="bold"
         android:layout_gravity="center_horizontal"
-        android:layout_below="@+id/password"
-        android:layout_centerHorizontal="true"
         android:background="#000000"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
