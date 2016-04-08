@@ -12,6 +12,7 @@
         android:id="@+id/enter_kill_id"
         android:gravity="center_horizontal"
         android:hint="@string/killid_hint"
+        android:background="@drawable/apptheme_edit_text_holo_light"
         android:fontFamily="roboto-slab"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />

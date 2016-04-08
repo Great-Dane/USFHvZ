@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
@@ -56,6 +57,7 @@ public class HeatMap extends AppCompatActivity implements
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
     ImageButton btAlert;
+    ImageView ivTimescale;
 
     //Declare variables
     String playerTeam;
@@ -90,6 +92,9 @@ public class HeatMap extends AppCompatActivity implements
         }
         alertDialogBuilder = new AlertDialog.Builder(this);
 
+        //Initialize ImageView
+        ivTimescale = (ImageView)findViewById(R.id.iv_timescale);
+        ivTimescale.setImageResource(R.drawable.timescale_shadow);
 
         //Initialize button
         btAlert = (ImageButton)findViewById(R.id.bt_enemy_sighted);
