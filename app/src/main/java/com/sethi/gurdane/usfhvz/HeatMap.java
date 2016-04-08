@@ -10,10 +10,12 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -275,14 +277,19 @@ public class HeatMap extends AppCompatActivity implements
 
     //Shows dynamic map help dialog, called when help button is pressed.
     private void showHelpDialog() {
-        alertDialogBuilder.setIcon(R.drawable.ic_action_help);
-        alertDialogBuilder.setMessage("Assistance is here!");
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_help, null);
+        final WebView wv = (WebView)view.findViewById(R.id.help_web);
+
+        wv.loadUrl("file:///android_asset/dialog_help.html");
         alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
             }
         });
         AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.setTitle("What is the Dynamic Map?");
+        alertDialog.setView(view);
         alertDialog.show();
     }
 

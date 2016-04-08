@@ -25,13 +25,13 @@
         android:layout_marginBottom="16dp"/>
 
     <ImageView
-        android:layout_width="12dp"
-        android:layout_height="60dp"
-        android:layout_marginLeft="20dp"
+        android:layout_width="16dp"
+        android:layout_height="80dp"
+        android:layout_marginRight="16dp"
         android:id="@+id/iv_timescale"
-        android:layout_alignBottom="@+id/bt_enemy_sighted"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@+id/bt_enemy_sighted" />
 
 
 </RelativeLayout>
