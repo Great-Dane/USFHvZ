@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -7,29 +7,55 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="#990000"
     tools:context="com.sethi.gurdane.usfhvz.Login">
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:id="@+id/iv_logo"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 
     <EditText android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_logo"
         android:hint="@string/prompt_email"
+        android:fontFamily="roboto-slab"
         android:inputType="textEmailAddress"
         android:maxLines="1"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:padding="6dp"
+        android:layout_margin="5dp"
+        android:background="@drawable/login_edit_text_style"/>
 
     <EditText android:id="@+id/password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/email"
         android:hint="@string/password_hint"
+        android:fontFamily="roboto-slab"
         android:inputType="textPassword"
         android:maxLines="1"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:padding="6dp"
+        android:layout_margin="5dp"
+        android:background="@drawable/login_edit_text_style"/>
 
-    <Button android:id="@+id/email_sign_in_button" style="?android:textAppearanceSmall"
-        android:layout_width="match_parent"
+    <Button android:id="@+id/email_sign_in_button"
+        style="?android:textAppearanceSmall"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/sign_in"
-        android:textStyle="bold" />
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="Sign in to USF HvZ"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/password"
+        android:layout_centerHorizontal="true"
+        android:background="#000000"
+        android:textColor="#FFFFFF" />
 
-</LinearLayout>
+</RelativeLayout>

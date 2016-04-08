@@ -9,8 +9,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
@@ -31,6 +34,7 @@ public class Login extends AppCompatActivity {
     EditText etEmail;
     EditText etPassword;
     Button btSignIn;
+    ImageView logo;
 
     //Shared Preferences variables
     public static SharedPreferences pref; //Shared Preferences
@@ -52,10 +56,14 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        //Initialize EditTexts and button
+        getSupportActionBar().hide();
+
+        //Initialize views
         etEmail = (EditText)findViewById(R.id.email);
         etPassword = (EditText)findViewById(R.id.password);
         btSignIn = (Button)findViewById(R.id.email_sign_in_button);
+        logo = (ImageView) findViewById(R.id.iv_logo);
+        logo.setImageResource(R.drawable.usfhvz_logo);
 
         //Initialize AWS credentials
         credentialsProvider = new CognitoCachingCredentialsProvider(
@@ -74,7 +82,7 @@ public class Login extends AppCompatActivity {
 
         btSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick (View v) {
+            public void onClick(View v) {
                 //perform action
                 email = etEmail.getText().toString();
                 password = etPassword.getText().toString();
@@ -86,6 +94,7 @@ public class Login extends AppCompatActivity {
 
     private void checkLogin() {
         if (pref.getBoolean(IS_LOGIN, false)) {
+            //Update user state
             enterApp();
         }
     }
@@ -103,6 +112,8 @@ public class Login extends AppCompatActivity {
         Intent intent = new Intent(this, Home.class);
         startActivity(intent);
     }
+
+
 
     //Verify user email and password
     public class VerifyCredentials extends AsyncTask<String, Void, String> {
@@ -140,9 +151,11 @@ public class Login extends AppCompatActivity {
         protected void onPostExecute(String page) {
             if (loginUser != null) {
                 if (loginUser.getPassword().equals(password)) {
-                    //Keep user logged in to the application until they log out
-                    createLoginSession(loginUser.getName(), loginUser.getState(),
-                            loginUser.getEmail(), loginUser.getPassword());
+                    if (email != "moderators@usfhvz.org") { //Do not keep moderator logged in
+                        //Keep user logged in to the application until they log out
+                        createLoginSession(loginUser.getName(), loginUser.getState(),
+                                loginUser.getEmail(), loginUser.getPassword());
+                    }
                     enterApp();
                 } else {
                     Toast.makeText(getApplicationContext(), "Invalid password.", Toast.LENGTH_SHORT).show();
@@ -151,27 +164,5 @@ public class Login extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Invalid e-mail.", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_login, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }
