@@ -95,6 +95,8 @@ public class Login extends AppCompatActivity {
     private void checkLogin() {
         if (pref.getBoolean(IS_LOGIN, false)) {
             //Update user state
+            CheckState obj = new CheckState();
+            obj.execute();
             enterApp();
         }
     }
@@ -113,7 +115,46 @@ public class Login extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //Update user state
+    public class CheckState extends AsyncTask<String, Void, String> {
+        PaginatedQueryList<USFHvZ_Users> result;
+        int resultSize = 0;
 
+        @Override
+        protected String doInBackground(String...params) {
+            //try {
+                //Set up DynamoDB client and mapper
+                AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
+                DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+                //Create USFHvZ_Users object with existing email
+                USFHvZ_Users user = new USFHvZ_Users();
+                user.setEmail(pref.getString(KEY_EMAIL, ""));
+
+                DynamoDBQueryExpression queryExpression = new DynamoDBQueryExpression()
+                        .withHashKeyValues(user)
+                        .withConsistentRead(false);
+
+                result = mapper.query(USFHvZ_Users.class, queryExpression);
+                resultSize = result.size();
+                if (result.size() > 0) {
+                    loginUser = result.get(0);
+                } else {
+                    loginUser = null;
+                }
+            //} catch (Exception e) {
+                //handle exception
+            //}
+            return null;
+        }
+
+        protected void onPostExecute(String page) {
+            if (loginUser != null) {
+                editor.putString(KEY_STATE, loginUser.getState());
+                editor.apply();
+            }
+        }
+    }
 
     //Verify user email and password
     public class VerifyCredentials extends AsyncTask<String, Void, String> {
@@ -151,7 +192,7 @@ public class Login extends AppCompatActivity {
         protected void onPostExecute(String page) {
             if (loginUser != null) {
                 if (loginUser.getPassword().equals(password)) {
-                    if (email != "moderators@usfhvz.org") { //Do not keep moderator logged in
+                    if (!loginUser.getKillId().equals("000000")) { //Do not keep moderator logged in
                         //Keep user logged in to the application until they log out
                         createLoginSession(loginUser.getName(), loginUser.getState(),
                                 loginUser.getEmail(), loginUser.getPassword());

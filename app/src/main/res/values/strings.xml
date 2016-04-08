@@ -7,8 +7,8 @@
     <!-- Home Strings -->
     <string name="humans_count">HUMANS: </string>
     <string name="zombies_count">ZOMBIES: </string>
-    <string name="player_name">Player Name</string>
-    <string name="team">Team</string>
+    <string name="player_name">Moderator</string>
+    <string name="team">USF HvZ Mods</string>
     <string name="action_refresh">Refresh</string>
     <string-array name="app_menu">
         <item>Navigate to...</item>

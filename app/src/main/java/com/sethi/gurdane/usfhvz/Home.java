@@ -71,6 +71,9 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         spinner.setAdapter(menuAdapter);
         spinner.setOnItemSelectedListener(this);
 
+        //Update user state
+
+
         //Display current player
         tvPlayerName.setText(Login.pref.getString(Login.KEY_NAME, ""));
         tvPlayerState.setText(Login.pref.getString(Login.KEY_STATE, ""));
@@ -90,7 +93,6 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         LoadPlayerCounts lpc = new LoadPlayerCounts();
         lpc.execute();
     }
-
 
     //Load moderator/game announcements
     public class LoadAnnouncements extends AsyncTask<String, Void, String> {
