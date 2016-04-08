@@ -31,6 +31,7 @@
 
     <!-- Heat Map Strings -->
     <string name="title_activity_heat_map">Dynamic Map</string>
+    <string name="action_help">Help</string>
 
     <!-- Rules Reference Strings -->
     <string name="title_activity_rules_reference">Rules Reference</string>
@@ -41,18 +42,18 @@
         <item>Achievements</item>
     </string-array>
 
+    <!--- Register Tag Strings -->
     <string name="title_activity_register_tag">Register Tag</string>
-    <string name="title_activity_moderator_controls">Moderator Controls</string>
-    <string name="action_help">Help</string>
 
     <!-- Moderator Controls Strings -->
+    <string name="title_activity_moderator_controls">Moderator Controls</string>
     <string name="title_post_announcement">Post Announcement</string>
     <string name="title_update_player">Alter Player State</string>
     <string name="header_title">Title:</string>
     <string name="body_title">Body:</string>
     <string name="header_hint">Enter a title for your announcement...</string>
     <string name="body_hint">What are you telling the players?</string>
-    <string name="killid_hint">Enter a player\'s Kill ID</string>
+    <string name="killid_hint">Enter a Kill ID</string>
     <string name="post_announcement">POST ANNOUNCEMENT</string>
     <string name="kill_human">KILL HUMAN</string>
     <string name="cure_zombie">CURE ZOMBIE</string>

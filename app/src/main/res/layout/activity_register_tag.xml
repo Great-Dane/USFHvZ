@@ -10,14 +10,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/enter_kill_id"
+        android:gravity="center_horizontal"
+        android:hint="@string/killid_hint"
+        android:fontFamily="roboto-slab"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:text="Register Tag"
         android:id="@+id/register_tag"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:background="#000000"
+        android:textColor="#FFFFFF"
         android:layout_below="@+id/enter_kill_id"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>
